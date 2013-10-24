@@ -19,13 +19,13 @@ int conv2D(float* in, float* out, int data_size_X, int data_size_Y,
    
     kernel = newker;
     
-    data_size_X += 2;
+    data_size_X += 3;
     data_size_Y += 2;
     int size = (data_size_X) * (data_size_Y);
     float newin[size];
     count2 = -1; 
     for (int count = 0; count < size; count++) {
-      if (count <  data_size_X|| (count + 1) % data_size_X == 0 || count % data_size_X == 0 || count > size - data_size_X) {
+      if (count <  data_size_X|| count % data_size_X == 1 || count % data_size_X == 0 || count > size - data_size_X) {
 	    newin[count] = 0;
       }
       else {

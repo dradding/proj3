@@ -1,14 +1,14 @@
 #include <emmintrin.h>
-#define KERNX 5 //this is the x-size of the kernel. It will always be odd.
-#define KERNY 5 //this is the y-size of the kernel. It will always be odd.
+#define KERNX 4 //this is the x-size of the kernel. It will always be odd.
+#define KERNY 3 //this is the y-size of the kernel. It will always be odd.
 int conv2D(float* in, float* out, int data_size_X, int data_size_Y,
                     float* kernel)
 {
     
-    float newker[25];
+    float newker[12];
     int count2 = -1; 
-    for (int count = 0; count < 25; count++) {
-      if (count <= 4 || (count + 1) % 5 == 0 || count % 5 == 0) {
+    for (int count = 0; count < 12; count++) {
+      if (count % 4 == 0) {
 	    newker[count] = 0;
       }
       else {
@@ -16,14 +16,16 @@ int conv2D(float* in, float* out, int data_size_X, int data_size_Y,
 	newker[count] = kernel[count2];
       }
     }
+   
     kernel = newker;
+    
     data_size_X += 2;
     data_size_Y += 2;
     int size = (data_size_X) * (data_size_Y);
     float newin[size];
     count2 = -1; 
     for (int count = 0; count < size; count++) {
-      if (count <  data_size_X|| (count + 1) % data_size_X == 0 || count % data_size_X == 0) {
+      if (count <  data_size_X|| (count + 1) % data_size_X == 0 || count % data_size_X == 0 || count > size - data_size_X) {
 	    newin[count] = 0;
       }
       else {
@@ -44,7 +46,7 @@ int conv2D(float* in, float* out, int data_size_X, int data_size_Y,
 				for(int j = -kern_cent_Y; j <= kern_cent_Y; j++){ // kernel unflipped y coordinate
 					for(int i = -kern_cent_X; i <= kern_cent_X; i++){ // kernel unflipped x coordinate
 					// only do the operation if not out of bounds
-					//  if(x+i>-1 && x+i<data_size_X && y+j>-1 && y+j<data_size_Y){
+					//if(x+i>-1 && x+i<data_size_X && y+j>-1 && y+j<data_size_Y){
 						//Note that the kernel is flipped
 							out[x+y*data_size_X] += 
 								kernel[(kern_cent_X-i)+(kern_cent_Y-j)*KERNX] * in[(x+i) + (y+j)*data_size_X];

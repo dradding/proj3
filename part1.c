@@ -70,7 +70,7 @@ int conv2D(float* in, float* out, int data_size_X, int data_size_Y,
 		}
 	}
 	
-	
+	printf("\n");
 	//Handles upper left corner
 	for(int j = 0; j <= kern_cent_Y; j++){ // kernel unflipped y coordinate
 		for(int i = 0; i <= kern_cent_X; i++){ // kernel unflipped x coordinate

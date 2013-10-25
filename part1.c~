@@ -54,7 +54,6 @@ int conv2D(float* in, float* out, int data_size_X, int data_size_Y,
     // the y coordinate of the kernel's center
     int kern_cent_Y = (KERNY - 1)/2;
     //printf("center of the kernel %d %d", kern_cent_X, kern_cent_Y); //uncomment to print the center of the kernel
-   
     // main convolution loop
 	for(int y = 1; y < data_size_Y -1; y++){ // the y coordinate of theoutput location we're focusing on
 		for(int x = 1; x < data_size_X -1; x++){ // the x coordinate of the output location we're focusing on
@@ -73,44 +72,68 @@ int conv2D(float* in, float* out, int data_size_X, int data_size_Y,
 	
 	
 	//Handles upper left corner
-	/*for(int j = 0; j <= kern_cent_Y; j++){ // kernel unflipped y coordinate
+	for(int j = 0; j <= kern_cent_Y; j++){ // kernel unflipped y coordinate
 		for(int i = 0; i <= kern_cent_X; i++){ // kernel unflipped x coordinate
 			out[0] += kernel[(kern_cent_X+i)+(kern_cent_Y+j)*(KERNX+1)] * in[(0+i) + (0+j)*data_size_X];
 			printf("kern Index: %d, kern Value: %f, x value: %f\n", (kern_cent_X+i)+(kern_cent_Y+j)*(KERNX+1), kernel[(kern_cent_X+i)+(kern_cent_Y+j)*(KERNX+1)], in[(0+i) + (0+j)*data_size_X]);
 		}
 	}
-	*/
-	for(int j = 0; j <= kern_cent_Y; j++){ // kernel unflipped y coordinate
-		for(int i = 0; i <= kern_cent_X; i++){ // kernel unflipped x coordinate
+	
+	/*for(int j = -kern_cent_Y; j <= 0; j++){ // kernel unflipped y coordinate
+		for(int i = -kern_cent_X; i <= 0; i++){ // kernel unflipped x coordinate
 			out[0] += kernel[(kern_cent_X-i)+(kern_cent_Y-j)*(KERNX+1)] * in[(0+i) + (0+j)*data_size_X];
 			printf("kern Index: %d, kern Value: %f, x value: %f\n", (kern_cent_X-i)+(kern_cent_Y-j)*(KERNX+1), kernel[(kern_cent_X-i)+(kern_cent_Y-j)*(KERNX+1)], in[(0+i) + (0+j)*data_size_X]);
 		}
-	}
-	
+	}*/
+	printf("\n");
 	//Handles upper right corner
 	
 	for(int j = 0; j <= kern_cent_Y; j++){ // kernel unflipped y coordinate
 		for(int i = -1; i <= kern_cent_X-1; i++){ // kernel unflipped x coordinate
-			out[data_size_X-1] += kernel[(kern_cent_X+i)+(kern_cent_Y+j)*(KERNX+1)] * in[(data_size_X-1+i) + (data_size_X-1+j)*data_size_X];
-			printf("kern Index: %d, kern Value: %f, x value: %f\n", (kern_cent_X+i)+(kern_cent_Y+j)*(KERNX+1), kernel[(kern_cent_X+i)+(kern_cent_Y+j)*(KERNX+1)], in[(0+i) + (0+j)*data_size_X]);
+			out[data_size_X-1] += kernel[(kern_cent_X+i)+(kern_cent_Y+j)*(KERNX+1)] * in[(data_size_X-1+i) + (0+j)*data_size_X];
+			printf("kern Index: %d, kern Value: %f, x value: %f\n", (kern_cent_X+i)+(kern_cent_Y+j)*(KERNX+1), kernel[(kern_cent_X+i)+(kern_cent_Y+j)*(KERNX+1)], in[(data_size_X-1+i) + (0+j)*data_size_X]);
 		}
 	}
 	
+	/*for(int j = -kern_cent_Y; j <= 0; j++){ // kernel unflipped y coordinate
+		for(int i = 0; i <= kern_cent_X; i++){ // kernel unflipped x coordinate
+			out[data_size_X-1] += kernel[(kern_cent_X-i)+(kern_cent_Y-j)*(KERNX+1)] * in[(data_size_X-1-i) + (0-j)*data_size_X];
+			printf("kern Index: %d, kern Value: %f, x value: %f\n", (kern_cent_X-i)+(kern_cent_Y-j)*(KERNX+1), kernel[(kern_cent_X-i)+(kern_cent_Y-j)*(KERNX+1)], in[(data_size_X-1-i) + (0-j)*data_size_X]);
+		}
+	}*/
+	
+	printf("\n");
 	//Handles lower right corner
 	for(int j = -1; j <= kern_cent_Y-1; j++){ // kernel unflipped y coordinate
 		for(int i = -1; i <= kern_cent_X-1; i++){ // kernel unflipped x coordinate
-			out[(data_size_X*data_size_Y)-1] += kernel[(kern_cent_X+i)+(kern_cent_Y+j)*(KERNX+1)] * in[((data_size_X*data_size_Y)-1+i) + ((data_size_X*data_size_Y)-1+j)*data_size_X];
-			printf("kern Index: %d, kern Value: %f, x value: %f\n", (kern_cent_X+i)+(kern_cent_Y+j)*(KERNX+1), kernel[(kern_cent_X+i)+(kern_cent_Y+j)*(KERNX+1)], in[(0+i) + (0+j)*data_size_X]);
+			out[(data_size_X*data_size_Y)-1] += kernel[(kern_cent_X+i)+(kern_cent_Y+j)*(KERNX+1)] * in[data_size_X-1+i + (data_size_Y-1+j)*data_size_X];
+			printf("kern Index: %d, kern Value: %f, x value: %f\n", (kern_cent_X+i)+(kern_cent_Y+j)*(KERNX+1), kernel[(kern_cent_X+i)+(kern_cent_Y+j)*(KERNX+1)], in[data_size_X-1+i + (data_size_Y-1+j)*data_size_X]);
 		}
 	}
-
+	/*for(int j = 0; j <= kern_cent_Y; j++){ // kernel unflipped y coordinate
+		for(int i = 0; i <= kern_cent_X; i++){ // kernel unflipped x coordinate
+			out[(data_size_X*data_size_Y-1)] += kernel[(kern_cent_X-i)+(kern_cent_Y-j)*(KERNX+1)] * in[data_size_X-1+i + (data_size_Y-1+j)*data_size_X];
+			printf("kern Index: %d, kern Value: %f, x value: %f\n", (kern_cent_X-i)+(kern_cent_Y-j)*(KERNX+1), kernel[(kern_cent_X-i)+(kern_cent_Y-j)*(KERNX+1)], in[data_size_X-1+i + (data_size_Y-1+j)*data_size_X]);
+		}
+	}*/
+	
+	printf("\n");
 	//Handles lower left corner
 	for(int j = -1; j <= kern_cent_Y-1; j++){ // kernel unflipped y coordinate
 		for(int i = 0; i <= kern_cent_X; i++){ // kernel unflipped x coordinate
-			out[(data_size_X*data_size_Y)-1-data_size_X] += kernel[(kern_cent_X+i)+(kern_cent_Y+j)*(KERNX+1)] * in[((data_size_X*data_size_Y)-1-data_size_X+i) + ((data_size_X*data_size_Y)-1-data_size_X+j)*data_size_X];
-			printf("kern Index: %d, kern Value: %f, x value: %f\n", (kern_cent_X+i)+(kern_cent_Y+j)*(KERNX+1), kernel[(kern_cent_X+i)+(kern_cent_Y+j)*(KERNX+1)], in[(0+i) + (0+j)*data_size_X]);
+			out[(data_size_X*data_size_Y)-data_size_X] += kernel[(kern_cent_X+i)+(kern_cent_Y+j)*(KERNX+1)] * in[0+i + (data_size_Y-1+j)*data_size_X];
+			printf("kern Index: %d, kern Value: %f, x value: %f\n", (kern_cent_X+i)+(kern_cent_Y+j)*(KERNX+1), kernel[(kern_cent_X+i)+(kern_cent_Y+j)*(KERNX+1)], in[0+i + (data_size_Y-1+j)*data_size_X]);
 		}
 	}
+	
+	/*for(int j = 0; j <= kern_cent_Y; j++){ // kernel unflipped y coordinate
+		for(int i = -kern_cent_X; i <= 0; i++){ // kernel unflipped x coordinate
+			out[(data_size_X*data_size_Y)-data_size_X] += kernel[(kern_cent_X-i)+(kern_cent_Y-j)*(KERNX+1)] * in[0-i + (data_size_Y-1+j)*data_size_X];
+			printf("kern Index: %d, kern Value: %f, x value: %f\n", (kern_cent_X-i)+(kern_cent_Y-j)*(KERNX+1), kernel[(kern_cent_X-i)+(kern_cent_Y-j)*(KERNX+1)], in[0-i + (data_size_Y-1+j)*data_size_X]);
+		}
+	}*/
+	
+	
 	
 	printf("\n in");
 	for (int i = 0; i < size; i++) {

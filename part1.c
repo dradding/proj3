@@ -4,18 +4,18 @@
 int conv2D(float* in, float* out, int data_size_X, int data_size_Y,
                     float* kernel)
 {
-  printf("old \n"); //print loop
+  /*printf("old \n"); //print loop
   for (int i = 0; i < 9; i++) {
 	  if (i % 3 == 0) {
 	    printf("\n");
 	  }
 	  printf(" %f ", kernel[i]);
-	}
+	}*/
 	
-    float newker[12]; // kerner conversion (padding to the left)
+    float newker[12]; // kerner conversion (padding to the right)
     int count2 = -1; 
     for (int count = 0; count < 12; count++) {
-      if ((count) % 4 == 0) {
+      if ((count) % 4 == 3) {
 	    newker[count] = 0;
       }
       else {
@@ -25,21 +25,21 @@ int conv2D(float* in, float* out, int data_size_X, int data_size_Y,
     }
     kernel = newker;
 
-    printf("\n new"); //print loop; new kernel
+    printf("\n padded kernelf"); //print loop; new kernel
     for (int i = 0; i < 12; i++) {
 	  if (i % 4 == 0) {
 	    printf("\n");
 	  }
 	  printf(" %f ", newker[i]);
 	}
-    
-    data_size_X += 3; //padding the input matrix all around
+    int size = (data_size_X) * (data_size_Y);
+    /*data_size_X += 3; //padding the input matrix all around
     data_size_Y += 2;
     int size = (data_size_X) * (data_size_Y);
     float newin[size];
     count2 = -1; 
     for (int count = 0; count < size; count++) {
-      if (count <  data_size_X|| count % data_size_X == 1 ||count % data_size_X == data_size_X - 1 || count % data_size_X == 0 || count > size - data_size_X) {
+ 0     if (count <  data_size_X|| count % data_size_X == 1 ||count % data_size_X == data_size_X - 1 || count % data_size_X == 0 || count > size - data_size_X) {
 	    newin[count] = 0;
       }
       else {
@@ -47,7 +47,7 @@ int conv2D(float* in, float* out, int data_size_X, int data_size_Y,
 	newin[count] = in[count2];
       }
     }
-    in = newin;
+    in = newin;*/
     // the x coordinate of the kernel's center
     int kern_cent_X = (KERNX - 1)/2;
     // the y coordinate of the kernel's center
@@ -55,20 +55,25 @@ int conv2D(float* in, float* out, int data_size_X, int data_size_Y,
     //printf("center of the kernel %d %d", kern_cent_X, kern_cent_Y); //uncomment to print the center of the kernel
    
     // main convolution loop
-	for(int y = 0; y < data_size_Y; y++){ // the y coordinate of theoutput location we're focusing on
-		for(int x = 0; x < data_size_X; x++){ // the x coordinate of the output location we're focusing on
+	for(int y = 1; y < data_size_Y -1; y++){ // the y coordinate of theoutput location we're focusing on
+		for(int x = 1; x < data_size_X -1; x++){ // the x coordinate of the output location we're focusing on
 				for(int j = -kern_cent_Y; j <= kern_cent_Y; j++){ // kernel unflipped y coordinate
 					for(int i = -kern_cent_X; i <= kern_cent_X; i++){ // kernel unflipped x coordinate
 					// only do the operation if not out of bounds
-					if(x+i>-1 && x+i<data_size_X && y+j>-1 && y+j<data_size_Y){
+					//if(x+i>-1 && x+i<data_size_X && y+j>-1 && y+j<data_size_Y){
 						//Note that the kernel is flipped
 							out[x+y*data_size_X] += 
-								kernel[(kern_cent_X-i)+(kern_cent_Y-j)*KERNX] * in[(x+i) + (y+j)*data_size_X];							
-					}
+								kernel[(kern_cent_X-i)+(kern_cent_Y-j)*KERNX+1] * in[(x+i) + (y+j)*data_size_X];							
+					//}
 				}
 			}
 		}
 	}
+	
+	for(int j = 
+		for(int i
+			out[0] += kernel[(kern_cent_X-i)+(kern_cent_Y-j)*KERNX+1] * in[(0+i) + (0+j)*data_size_X]; 
+	
 	printf("\n in");
 	for (int i = 0; i < size; i++) {
 	  if (i % (data_size_X) == 0) {

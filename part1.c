@@ -118,7 +118,7 @@ int conv2D(float* in, float* out, int data_size_X, int data_size_Y,
 	}
 //=======
 	
-	printf("\n");
+	//printf("\n");
 	//Handles upper left corner
 	for(int j = 0; j <= kern_cent_Y; j++){ // kernel unflipped y coordinate
 		for(int i = 0; i <= kern_cent_X; i++){ // kernel unflipped x coordinate
@@ -133,7 +133,7 @@ int conv2D(float* in, float* out, int data_size_X, int data_size_Y,
 			printf("kern Index: %d, kern Value: %f, x value: %f\n", (kern_cent_X-i)+(kern_cent_Y-j)*(KERNX+1), kernel[(kern_cent_X-i)+(kern_cent_Y-j)*(KERNX+1)], in[(0+i) + (0+j)*data_size_X]);
 		}
 	}*/
-	printf("\n");
+	//printf("\n");
 	//Handles upper right corner
 	
 	for(int j = 0; j <= kern_cent_Y; j++){ // kernel unflipped y coordinate
@@ -165,7 +165,7 @@ int conv2D(float* in, float* out, int data_size_X, int data_size_Y,
 		}
 	}*/
 	
-	printf("\n");
+	//printf("\n");
 	//Handles lower left corner
 	for(int j = -1; j <= kern_cent_Y-1; j++){ // kernel unflipped y coordinate
 		for(int i = 0; i <= kern_cent_X; i++){ // kernel unflipped x coordinate

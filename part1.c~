@@ -4,15 +4,15 @@
 int conv2D(float* in, float* out, int data_size_X, int data_size_Y,
                     float* kernel)
 {
-  /*printf("old \n"); //print loop
+  printf("old \n"); //print loop
   for (int i = 0; i < 9; i++) {
 	  if (i % 3 == 0) {
 	    printf("\n");
 	  }
 	  printf(" %f ", kernel[i]);
-	}*/
+	}
 	
-    float newker[12]; // kerner conversion (padding to the right)
+  /*  float newker[12]; // kerner conversion (padding to the right)
     int count2 = -1; 
     for (int count = 0; count < 12; count++) {
       if ((count) % 4 == 3) {
@@ -23,7 +23,7 @@ int conv2D(float* in, float* out, int data_size_X, int data_size_Y,
 	newker[count] = kernel[count2];
       }
     }
-    kernel = newker;
+    kernel = newker;*/
 
    // printf("\n padded kernel"); //print loop; new kernel
    // for (int i = 0; i < 12; i++) {
@@ -63,7 +63,7 @@ int conv2D(float* in, float* out, int data_size_X, int data_size_Y,
 					//if(x+i>-1 && x+i<data_size_X && y+j>-1 && y+j<data_size_Y){
 						//Note that the kernel is flipped
 							out[x+y*data_size_X] += 
-								kernel[(kern_cent_X-i)+(kern_cent_Y-j)*(KERNX+1)] * in[(x+i) + (y+j)*data_size_X];							
+								kernel[(kern_cent_X-i)+(kern_cent_Y-j)*(KERNX)] * in[(x+i) + (y+j)*data_size_X];							
 					//}
 				}
 			}
@@ -77,7 +77,7 @@ int conv2D(float* in, float* out, int data_size_X, int data_size_Y,
 	     // printf("input matrix edges being multiplied: %d %d %d \n", k-1, k, k+1);
 	     // for (int g = 3; g<=8; g = g + 3) {
 		//printf("\n \n kernel index multiplied by \n %f * %f  + \n %f * %f  + \n %f * %f  + \n %f * %f + \n %f * %f + \n %f * %f \n", in[k+1], kernel[6], in[k], kernel[5], in[k-1], kernel[4], in[k+1], kernel[10], in[k], kernel[9], in[k-1], kernel[7]);
-		out[i] = (in[k+1] * kernel[6]) + (in[k] * kernel[5]) + (in[k-1] * kernel[4]) + (in[k+data_size_X+1] * kernel[10]) + (in[k+data_size_X] * kernel[9]) + (in[k+data_size_X-1] * kernel[7]); 
+		out[i] = (in[k+1] * kernel[3]) + (in[k] * kernel[4]) + (in[k-1] * kernel[5]) + (in[k+data_size_X+1] * kernel[0]) + (in[k+data_size_X] * kernel[1]) + (in[k+data_size_X-1] * kernel[2]); 
 	      }
 	  //  }
 	}
@@ -88,8 +88,8 @@ int conv2D(float* in, float* out, int data_size_X, int data_size_Y,
 	    //  printf("input matrix edges being multiplied: %d %d \n", k, k+1);
 	     // for (int g = 1; g<=8; g = g + 3) {
 		//printf("kernel index multiplied by %d %d\n", g, g+1);
-		//printf("\n \n new print kernel index multiplied by \n %f * %f  + \n %f * %f  + \n %f * %f  + \n %f * %f + \n %f * %f + \n %f * %f \n printted value at %f", in[k], kernel[1], in[k+1], kernel[2], in[k+ data_size_X], kernel[5], in[k+data_size_X+1], kernel[6], in[data_size_X + (data_size_X + k)], kernel[9], in[data_size_X + (data_size_X + k)+1], kernel[10], in[i]);
-		out[i] = (in[k] * kernel[1]) + (in[k+1] * kernel[2]) + (in[k+ data_size_X] * kernel[5]) + (in[k+data_size_X+1] * kernel[6]) + (in[data_size_X + (data_size_X + k)] * kernel[9]) + (in[data_size_X + (data_size_X + k)+1] * kernel[10]); 
+		//printf("\n \n new print kernel index multiplied by \n 0%f * %f  + \n %f * %f  + \n %f * %f  + \n %f * %f + \n %f * %f + \n %f * %f \n printted value at %f", in[k], kernel[1], in[k+1], kernel[2], in[k+ data_size_X], kernel[5], in[k+data_size_X+1], kernel[6], in[data_size_X + (data_size_X + k)], kernel[9], in[data_size_X + (data_size_X + k)+1], kernel[10], in[i]);
+		out[i] = (in[k] * kernel[7]) + (in[k+1] * kernel[6]) + (in[k+ data_size_X] * kernel[4]) + (in[k+data_size_X+1] * kernel[3]) + (in[data_size_X + (data_size_X + k)] * kernel[1]) + (in[data_size_X + (data_size_X + k)+1] * kernel[0]); 
 	    //  }
 	    }
 	}
@@ -100,7 +100,7 @@ int conv2D(float* in, float* out, int data_size_X, int data_size_Y,
 	   //   printf("input matrix edges being multiplied: %d %d %d \n", k-1, k, k+1);
 	      //for (int g = 0; g<=5; g = g + 3) {
 	//	printf("kernel index multiplied by %d %d %d \n", g, g+1, g+2);
-		out[i] = (in[k-1] * kernel[0]) + (in[k] * kernel[1]) + (in[k+1] * kernel[2]) + (in[k+data_size_X-1] * kernel[4]) + (in[k+data_size_X] * kernel[5]) + (in[k+data_size_X+1] * kernel[6]); 
+		out[i] = (in[k-1] * kernel[8]) + (in[k] * kernel[7]) + (in[k+1] * kernel[6]) + (in[k+data_size_X-1] * kernel[5]) + (in[k+data_size_X] * kernel[4]) + (in[k+data_size_X+1] * kernel[3]); 
 	      //}
 	    }
 	}
@@ -112,7 +112,7 @@ int conv2D(float* in, float* out, int data_size_X, int data_size_Y,
 	  //    for (int g = 0; g<=8; g = g + 3) {
 		//printf("multiplied by index location:%d %d\n", i,  g, g+1);
 		//printf("\n \n kernel index multiplied by \n %f * %f  + \n %f * %f  + \n %f * %f  + \n %f * %f + \n %f * %f \n %f %f \n",in[k-1], kernel[0], in[k] , kernel[1], in[k + data_size_X -1], kernel[4], in[k + data_size_X], kernel[5], in[(k + data_size_X + data_size_X)-1], kernel[8], in[k + data_size_X + data_size_X], kernel[9]);
-		out[i] = (in[k-1] * kernel[0]) + (in[k] * kernel[1]) + (in[k + data_size_X -1] * kernel[4]) + (in[k + data_size_X] * kernel[5]) + (in[(k + data_size_X + data_size_X)-1] * kernel[8]) + (in[k + data_size_X + data_size_X] * kernel[9]); 
+		out[i] = (in[k-1] * kernel[8]) + (in[k] * kernel[7]) + (in[k + data_size_X -1] * kernel[5]) + (in[k + data_size_X] * kernel[4]) + (in[(k + data_size_X + data_size_X)-1] * kernel[2]) + (in[k + data_size_X + data_size_X] * kernel[1]); 
 	      //}
 	    }
 	}
@@ -184,7 +184,7 @@ int conv2D(float* in, float* out, int data_size_X, int data_size_Y,
 	
 	
 //>>>>>>> c324f51a29a84cc072096d48e7147f135f25687d
-	/*printf("\n in");
+ 	printf("\n in");
 	for (int i = 0; i < size; i++) {
 	  if (i % (data_size_X) == 0) {
 	    printf("\n");
@@ -198,7 +198,7 @@ int conv2D(float* in, float* out, int data_size_X, int data_size_Y,
 	    printf("\n");
 	  }
 	  printf(" %f ", out[i]);
-	}*/
+	}
 	
 	return 1;
 }

@@ -17,21 +17,24 @@ int conv2D(float* in, float* out, int data_size_X, int data_size_Y,
 	}*/
 	
 
-    /*float newker[12]; // kerner conversion (padding to the right)
+    /*float newker[12]; // kerner conversion (padding to the right)*/
 
-  /*  float newker[12]; // kerner conversion (padding to the right)
+    float newker[12]; // kerner conversion (padding to the right)
 
-    int count2 = -1; 
+   // int count2 = -1; 
     for (int count = 0; count < 12; count++) {
-      if ((count) % 4 == 3) {
-	    newker[count] = 0;
+	newker[count] = kernel[count];
       }
-      else {
-	count2++;
-	newker[count] = kernel[count2];
+    kernel = newker;
+    
+    int size = (data_size_X) * (data_size_Y);
+    float newin[size]; // kerner conversion (padding to the right)
+
+    //int count2 = -1; 
+    for (int count = 0; count < size; count++) {
+	newin[count] = in[count];
       }
-    }
-    kernel = newker;*/
+    in = newin;
 
    // printf("\n padded kernel"); //print loop; new kernel
    // for (int i = 0; i < 12; i++) {
@@ -41,9 +44,6 @@ int conv2D(float* in, float* out, int data_size_X, int data_size_Y,
 //	  printf(" %f", newker[i]);
 //	}
 	//printf("\n");
-    int size = (data_size_X) * (data_size_Y);
-    float newker[9];
-    *newker = *kernel;
     /*data_size_X += 3; //padding the input matrix all around
     data_size_Y += 2;
     int size = (data_size_X) * (data_size_Y);

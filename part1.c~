@@ -1,6 +1,7 @@
 #include <emmintrin.h>
 #define KERNX 3//this is the x-size of the kernel. It will always be odd.
 #define KERNY 3 //this is the y-size of the kernel. It will always be odd.
+//Authors: Ayush Mudgal (cs61c-cj) and Daniel Radding (cs61c-vh)
 int conv2D(float* in, float* out, int data_size_X, int data_size_Y,
                     float* kernel)
 {
@@ -19,11 +20,13 @@ int conv2D(float* in, float* out, int data_size_X, int data_size_Y,
 
     /*float newker[12]; // kerner conversion (padding to the right)*/
 
-    float newker[12]; // kerner conversion (padding to the right)
+    float newker[KERNX * KERNY]; // kerner conversion (padding to the right)
 
    // int count2 = -1; 
-    for (int count = 0; count < 12; count++) {
+    __m128 kern_intrin[KERNX * KERNY];
+    for (int count = 0; count < (KERNX * KERNY); count++) {
 	newker[count] = kernel[count];
+	kern_intrin[count] = _mm_set_ps1 (kernel[count]);
       }
     kernel = newker;
     
@@ -63,17 +66,26 @@ int conv2D(float* in, float* out, int data_size_X, int data_size_Y,
     int kern_cent_X = (KERNX - 1)/2;
     // the y coordinate of the kernel's center
     int kern_cent_Y = (KERNY - 1)/2;
+    __m128 outload;
+    __m128 inload;
+    __m128 kernelload;
     //printf("center of the kernel %d %d", kern_cent_X, kern_cent_Y); //uncomment to print the center of the kernel
     // main convolution loop
-	for(int y = 1; y < data_size_Y -1; y++){ // the y coordinate of theoutput location we're focusing on
-		for(int x = 1; x < data_size_X -1; x++){ // the x coordinate of the output location we're focusing on
+	for(int y = 1; y < data_size_Y - 1; y++){ // the y coordinate of theoutput location we're focusing on
+		for(int x = 1; x <= data_size_X -4; x+=4){ // the x coordinate of the output location we're focusing on
 				for(int j = -kern_cent_Y; j <= kern_cent_Y; j++){ // kernel unflipped y coordinate
 					for(int i = -kern_cent_X; i <= kern_cent_X; i++){ // kernel unflipped x coordinate
 					// only do the operation if not out of bounds
 					//if(x+i>-1 && x+i<data_size_X && y+j>-1 && y+j<data_size_Y){
 						//Note that the kernel is flipped
-							out[x+y*data_size_X] += 
-								kernel[(kern_cent_X-i)+(kern_cent_Y-j)*(KERNX)] * in[(x+i) + (y+j)*data_size_X];							
+							//out[x+y*data_size_X] += 
+							//	kernel[(kern_cent_X-i)+(kern_cent_Y-j)*(KERNX)] * in[(x+i) + (y+j)*data_size_X];
+							outload = _mm_loadu_ps (out+(x+y*data_size_X)); 
+							inload = _mm_loadu_ps (in+((x+i) + (y+j)*data_size_X));
+							kernelload = _mm_loadu_ps (kern_intrin +((kern_cent_X-i)+(kern_cent_Y-j)*(KERNX)));
+							inload = _mm_mul_ps (kernelload , inload);
+							outload = _mm_add_ps (outload, inload);
+							_mm_storeu_ps ((out+(x+y*data_size_X)), outload);
 					//}
 				}
 			}
@@ -161,7 +173,7 @@ int conv2D(float* in, float* out, int data_size_X, int data_size_Y,
 	//Handles lower left corner
 	for(int j = 0; j <= kern_cent_Y; j++){ // kernel unflipped y coordinate
 		for(int i = -1; i <= kern_cent_X-1; i++){ // kernel unflipped x coordinate
-			//out[(data_size_X*data_size_Y)-data_size_X] += kernel[(kern_cent_X+i)+(kern_cent_Y+j)*(KERNX)] * in[(-(data_size_X*data_size_Y+data_size_X)+ 0+i + (data_size_Y-1+j)*data_size_X) * -1];
+			out[(data_size_X*data_size_Y)-data_size_X] += kernel[(kern_cent_X+i)+(kern_cent_Y+j)*(KERNX)] * in[(-(data_size_X*data_size_Y+data_size_X)+ 0+i + (data_size_Y-1+j)*data_size_X) * -1];
 			out[(data_size_X*data_size_Y)-data_size_X] += kernel[(kern_cent_X+i)+(kern_cent_Y+j)*(KERNX)] * in[((-i)*-1 + (2*data_size_X*j)- (data_size_Y-1+j)*data_size_X)*-1];
 			//printf("kern Index: %d, kern Value: %f, in index: %d, in value: %f\n", (kern_cent_X+i)+(kern_cent_Y+j)*(KERNX), kernel[(kern_cent_X+i)+(kern_cent_Y+j)*(KERNX)],((-i)*-1 + (2*data_size_X*j)- (data_size_Y-1+j)*data_size_X)*-1, in[((-i)*-1 + (2*data_size_X*j)- (data_size_Y-1+j)*data_size_X)*-1]);
 		}

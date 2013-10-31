@@ -118,7 +118,6 @@ in = newin;*/
                 }
         }*/
 
-						  
         //printf("top calculations \n");
         for(int i = 1; i <= data_size_X -2 ; i++){
          // printf("input matrix edge: %d \n", i);

@@ -100,6 +100,13 @@ int conv2D(float* in, float* out, int data_size_X, int data_size_Y,
 		}
 	}
 	
+        printf("\n out") ;
+        for (int i = 0; i < size; i++) {
+          if (i % (data_size_X) == 0) {
+            printf("\n");
+          }
+          printf(" %f ", out[i]);
+        }
 	
 	return 1;
 }

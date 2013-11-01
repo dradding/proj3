@@ -2,6 +2,7 @@
 #define KERNX 3//this is the x-size of the kernel. It will always be odd.
 #define KERNY 3 //this is the y-size of the kernel. It will always be odd.
 #include <omp.h>
+#define unroll 4
 //Authors: Ayush Mudgal (cs61c-cj) and Daniel Radding (cs61c-vh)
 int conv2D(float* in, float* out, int data_size_X, int data_size_Y,
                     float* kernel)
@@ -25,10 +26,10 @@ for (int i = 0; i < 9; i++) {
     float newker[KERNX * KERNY]; // kerner conversion (padding to the right)
 
    // int count2 = -1;
-    __m128 kern_intrin[KERNX * KERNY];
+    //__m128 kern_intrin[KERNX * KERNY];
     for (int count = 0; count < (KERNX * KERNY); count++) {
         newker[count] = kernel[count];
-        kern_intrin[count] = _mm_set_ps1 (kernel[count]);
+        //kern_intrin[count] = _mm_set_ps1 (kernel[count]);
       }
     kernel = newker;
     int size = (data_size_X) * (data_size_Y);
@@ -73,51 +74,130 @@ in = newin;*/
     __m128 kernelload;
     //printf("center of the kernel %d %d", kern_cent_X, kern_cent_Y); //uncomment to print the center of the kernel
     // main convolution loop
+    /*for(int r = 0; r < 10; r++){
+	  lsakjfdl;sajf
+    }
+    sum[x] += 2;
+    sum[x+1] += 2;
+    sum[x+2] += 2;
+    sum[x+3] += 2;
+    for(int r = 0; r < UNROLL; r++){
+      sum[x+r] += in[x + r];
+    }*/
     
-       for(int i = -kern_cent_X; i<=kern_cent_X; i++){
-            for(int j = -kern_cent_Y; j <= kern_cent_Y; j++){
-	         for(int x = 1 + i; x <= (data_size_X-1+i)/4*4; x+=4){
-		      for(int y = 1 + j; y<data_size_Y-1+j; y++){
-		           outload = _mm_loadu_ps (out+(x+y*data_size_X));
-			    inload = _mm_loadu_ps (in+((x-i)+(y-j)*data_size_X));
-			    //kernelload = *(kern_intrin +((kern_cent_X-i)+(kern_cent_Y-j)*(KERNX)));
-			    kernelload = _mm_load_ps1(kernel + ((kern_cent_X-i)+(kern_cent_Y-j)*(KERNX)));
-                          inload = _mm_mul_ps (kernelload , inload);
-                          outload = _mm_add_ps (outload, inload);
-                          _mm_storeu_ps ((out+(x+y*data_size_X)), outload);
+    
+	      for(int y = 1; y<data_size_Y-1; y++){   
+	          for(int x = 1; x < (data_size_X-1)/4*4; x+=4){
+		    for(int i = -kern_cent_X; i<=kern_cent_X; i++){
+		      for(int j = -kern_cent_Y; j <= kern_cent_Y; j++){
+				  inload = _mm_loadu_ps (in+((x+i)+(y+j)*data_size_X));
+				  outload = _mm_loadu_ps (out+(x+y*data_size_X));
+				  kernelload = _mm_load_ps1(kernel + ((kern_cent_X-i)+(kern_cent_Y-j)*(KERNX)));
+				  inload = _mm_mul_ps (kernelload , inload);
+				  outload = _mm_add_ps (outload, inload);
+				  _mm_storeu_ps ((out+(x+y*data_size_X)), outload);
+				  
+			   	
+		    //for(int u = (data_size_X-1)/4*4 + (4 - data_size_X%4); u < (data_size_X-1); u++){
+				  for(int u = (data_size_X- data_size_X%4); u < (data_size_X-1); u++){
+				    printf("out index %d \n", u+y*data_size_X);
+				    printf("in index:%f, i:%d, j:%d \n", in[(u+i) + (y+j)*data_size_X],i,j);
+				  //  printf("in index %d \n", (u+i) + (y+j)*data_size_X);
+				   //printf("%d \n", u);
+				    out[u+y*data_size_X] +=
+				    kernel[(kern_cent_X-i)+(kern_cent_Y-j)*(KERNX)] * in[(u-i) + (y-j)*data_size_X];
+                              }
+                        
+			  }
 		      }
+		      
 		 }
 	    }
-	 
-       }
-    
-    
-    
-        /*for(int y = 1; y < data_size_Y -1; y++){ // the y coordinate of theoutput location we're focusing on
-                for(int x = 1; x <= data_size_X-1; x++){ // the x coordinate of the output location we're focusing on
-                                for(int j = -kern_cent_Y; j <= kern_cent_Y; j++){ // kernel unflipped y coordinate
-                                        for(int i = -kern_cent_X; i <= kern_cent_X; i++){ // kernel unflipped x coordinate
-                                        // only do the operation if not out of bounds
-                                        //if(x+i>-1 && x+i<data_size_X && y+j>-1 && y+j<data_size_Y){
-                                                //Note that the kernel is flipped
-                                                        out[x+y*data_size_X] +=
-                                                               kernel[(kern_cent_X-i)+(kern_cent_Y-j)*(KERNX)] * in[(x+i) + (y+j)*data_size_X];
-                                                  /*      outload = _mm_loadu_ps (out+(x+y*data_size_X));
-							 // float outf = outload;
-							 // printf("%f", outload);
-                                                        inload = _mm_loadu_ps (in+((x+i) + (y+j)*data_size_X));
-							  //float inf = inload;
-                                                        //printf("%f", inload);
-                                                        kernelload = *(kern_intrin +((kern_cent_X-i)+(kern_cent_Y-j)*(KERNX)));
-                                                        inload = _mm_mul_ps (kernelload , inload);
-                                                        outload = _mm_add_ps (outload, inload);
-                                                        _mm_storeu_ps ((out+(x+y*data_size_X)), outload);
-                                        //}
+	    
+     /*for(int i = -kern_cent_X; i<=kern_cent_X; i++){
+            for(int j = -kern_cent_Y; j <= kern_cent_Y; j++){
+	         for(int y = 1; y<data_size_Y-1; y++){
+	             for(int x = (data_size_X-1)/4*4; x < (data_size_X-1); x++){
+				    printf("I'm high");
+				    out[x+y*data_size_X] +=
+				    kernel[(kern_cent_X-i)+(kern_cent_Y-j)*(KERNX)] * in[(x+i) + (y+j)*data_size_X];
                                 }
                         }
                 }
         }*/
 
+    
+       /*for(int i = -kern_cent_X; i<=kern_cent_X; i++){
+            for(int j = -kern_cent_Y; j <= kern_cent_Y; j++){
+	      for(int y = 1; y<data_size_Y-1; y++){   
+	          for(int x = 1; x < (data_size_X-1)/(unroll*unroll)*(unroll*unroll); x+=unroll){
+		           for(int r = 0; r<unroll*unroll; r+=unroll){
+				  inload = _mm_loadu_ps (in+((x+r*4+i)+(y+j)*data_size_X));
+				  outload = _mm_loadu_ps (out+(x+r*4+y*data_size_X));
+				  kernelload = _mm_load_ps1(kernel + ((kern_cent_X-i)+(kern_cent_Y-j)*(KERNX)));
+				  inload = _mm_mul_ps (kernelload , inload);
+				  outload = _mm_add_ps (outload, inload);
+				  _mm_storeu_ps ((out+(x+r*4+y*data_size_X)), outload);
+			   }
+		      }
+		 }
+	    }
+	 
+       }*/
+       
+       /*for(int i = -kern_cent_X; i<=kern_cent_X; i++){
+            for(int j = -kern_cent_Y; j <= kern_cent_Y; j++){
+	      for(int y = 1; y<data_size_Y-1; y++){   
+	          for(int x = 1; x < ((data_size_X-1)/16*16); x+=16){
+				  inload = _mm_loadu_ps (in+((x+i)+(y+j)*data_size_X));
+				  outload = _mm_loadu_ps (out+(x+y*data_size_X));
+				  kernelload = _mm_load_ps1(kernel + ((kern_cent_X-i)+(kern_cent_Y-j)*(KERNX)));
+				  inload = _mm_mul_ps (kernelload , inload);
+				  outload = _mm_add_ps (outload, inload);
+				  _mm_storeu_ps ((out+(x+y*data_size_X)), outload);
+		    
+				  inload = _mm_loadu_ps (in+((x+4+i)+(y+j)*data_size_X));
+				  outload = _mm_loadu_ps (out+(x+4+y*data_size_X));
+				  kernelload = _mm_load_ps1(kernel + ((kern_cent_X-i)+(kern_cent_Y-j)*(KERNX)));
+				  inload = _mm_mul_ps (kernelload , inload);
+				  outload = _mm_add_ps (outload, inload);
+				  _mm_storeu_ps ((out+(x+4+y*data_size_X)), outload);
+				  
+				  inload = _mm_loadu_ps (in+((x+8+i)+(y+j)*data_size_X));
+				  outload = _mm_loadu_ps (out+(x+8+y*data_size_X));
+				  kernelload = _mm_load_ps1(kernel + ((kern_cent_X-i)+(kern_cent_Y-j)*(KERNX)));
+				  inload = _mm_mul_ps (kernelload , inload);
+				  outload = _mm_add_ps (outload, inload);
+				  _mm_storeu_ps ((out+(x+8+y*data_size_X)), outload);
+				  
+				  inload = _mm_loadu_ps (in+((x+12+i)+(y+j)*data_size_X));
+				  outload = _mm_loadu_ps (out+(x+12+y*data_size_X));
+				  kernelload = _mm_load_ps1(kernel + ((kern_cent_X-i)+(kern_cent_Y-j)*(KERNX)));
+				  inload = _mm_mul_ps (kernelload , inload);
+				  outload = _mm_add_ps (outload, inload);
+				  _mm_storeu_ps ((out+(x+12+y*data_size_X)), outload);
+				  
+			   }
+		      }
+		 }
+	    }*/
+	 
+       
+       /*for(int i = -kern_cent_X; i<=kern_cent_X; i++){
+            for(int j = -kern_cent_Y; j <= kern_cent_Y; j++){
+	      for(int y = 1; y<data_size_Y-1; y++){   
+	          for(int x = 1; x < (data_size_X-1)/(unroll*unroll)*(unroll*unroll); x+=4){
+			inload = _mm_loadu_ps (in+((x+i)+(y+j)*data_size_X));
+			outload = _mm_loadu_ps (out+(x+y*data_size_X));
+			kernelload = _mm_load_ps1(kernel + ((kern_cent_X-i)+(kern_cent_Y-j)*(KERNX)));
+			inload = _mm_mul_ps (kernelload , inload);
+			outload = _mm_add_ps (outload, inload);
+			_mm_storeu_ps ((out+(x+y*data_size_X)), outload);
+		      }
+		 }
+	    }
+	 
+       }*/
 						  
         //printf("top calculations \n");
         for(int i = 1; i <= data_size_X -2 ; i++){
@@ -204,8 +284,7 @@ in = newin;*/
                 }
         }
         
-
-         printf("\n in");
+        printf("\n in");
         for (int i = 0; i < size; i++) {
          if (i % (data_size_X) == 0) {
          printf("\n");
@@ -221,7 +300,7 @@ in = newin;*/
          printf(" %f ", out[i]);
         }
         
-
+   
   }
   return 1;
 }

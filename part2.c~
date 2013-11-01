@@ -90,6 +90,7 @@ in = newin;*/
 	          for(int x = 1; x < (data_size_X-1)/4*4; x+=4){
 		    for(int i = -kern_cent_X; i<=kern_cent_X; i++){
 		      for(int j = -kern_cent_Y; j <= kern_cent_Y; j++){
+				  //printf("out index: %d\n",x+y*data_size_X); 
 				  inload = _mm_loadu_ps (in+((x+i)+(y+j)*data_size_X));
 				  outload = _mm_loadu_ps (out+(x+y*data_size_X));
 				  kernelload = _mm_load_ps1(kernel + ((kern_cent_X-i)+(kern_cent_Y-j)*(KERNX)));
@@ -99,32 +100,34 @@ in = newin;*/
 				  
 			   	
 		    //for(int u = (data_size_X-1)/4*4 + (4 - data_size_X%4); u < (data_size_X-1); u++){
-				  for(int u = (data_size_X- data_size_X%4); u < (data_size_X-1); u++){
-				    printf("out index %d \n", u+y*data_size_X);
-				    printf("in index:%f, i:%d, j:%d \n", in[(u+i) + (y+j)*data_size_X],i,j);
-				  //  printf("in index %d \n", (u+i) + (y+j)*data_size_X);
-				   //printf("%d \n", u);
-				    out[u+y*data_size_X] +=
-				    kernel[(kern_cent_X-i)+(kern_cent_Y-j)*(KERNX)] * in[(u-i) + (y-j)*data_size_X];
-                              }
-                        
+// 				  for(int u = (data_size_X- data_size_X%4); u < (data_size_X-1); u++){
+// 				  //printf("out value %d \n", out[u+y*data_size_X]);
+// 				   // printf("in index:%f, i:%d, j:%d \n", in[(u+i) + (y+j)*data_size_X],i,j);
+// 				  //printf("in index %d \n", (u+i) + (y+j)*data_size_X);
+// 				  //printf("%d \n", u);
+// 				    out[u+y*data_size_X+1] +=
+// 				    kernel[(kern_cent_X-i)+(kern_cent_Y-j)*(KERNX)] * in[(u+i) + (y+j)*data_size_X+1];                              }
+		      }
 			  }
 		      }
 		      
 		 }
-	    }
-	    
-     /*for(int i = -kern_cent_X; i<=kern_cent_X; i++){
-            for(int j = -kern_cent_Y; j <= kern_cent_Y; j++){
-	         for(int y = 1; y<data_size_Y-1; y++){
-	             for(int x = (data_size_X-1)/4*4; x < (data_size_X-1); x++){
-				    printf("I'm high");
-				    out[x+y*data_size_X] +=
-				    kernel[(kern_cent_X-i)+(kern_cent_Y-j)*(KERNX)] * in[(x+i) + (y+j)*data_size_X];
-                                }
-                        }
-                }
-        }*/
+	      for(int y = 1; y<data_size_Y-1; y++){
+		for(int u = ((data_size_X-2) - ((data_size_X-2)%4)); u < (data_size_X-2); u++){	    
+		  for(int i = -kern_cent_X; i<=kern_cent_X; i++){
+		      for(int j = -kern_cent_Y; j <= kern_cent_Y; j++){
+						printf("out index %d \n", u+y*data_size_X+1);
+						// printf("in index:%f, i:%d, j:%d \n", in[(u+i) + (y+j)*data_size_X],i,j);
+						//printf("in index %d \n", (u+i) + (y+j)*data_size_X);
+						//printf("%d \n", u);
+						  
+						  out[u+y*data_size_X+1] +=
+						  kernel[(kern_cent_X-i)+(kern_cent_Y-j)*(KERNX)] * in[(u+i) + (y+j)*data_size_X+1];
+					    }
+			      
+				      }
+			      }
+		      }
 
     
        /*for(int i = -kern_cent_X; i<=kern_cent_X; i++){
